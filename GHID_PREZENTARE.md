@@ -1,4 +1,4 @@
-# Ghid de prezentare — Employee Leave Hub
+# Ghid de prezentare — Employee Leave Hub — Tăranu Ionuț
 
 Acest document te ajută să înțelegi și să prezinți proiectul fără să memorezi codul.
 

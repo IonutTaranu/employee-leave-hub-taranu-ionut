@@ -1,8 +1,8 @@
-# Employee Leave Hub
+# Employee Leave Hub — Tăranu Ionuț
 
 Aplicație web completă pentru gestionarea concediilor angajaților: depunere, aprobare, respingere, anulare, solduri, calendar comun, documente justificative, rapoarte și export PDF.
 
-Proiect realizat pentru practica de specialitate, pe baza cerințelor din tema **Employee Leave Hub**.
+Proiect realizat de **Tăranu Ionuț** pentru practica de specialitate, pe baza cerințelor din tema **Employee Leave Hub**.
 
 ## Ce oferă aplicația
 
