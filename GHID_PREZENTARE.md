@@ -42,7 +42,7 @@ Employee Leave Hub este o aplicație prin care angajații își depun cererile d
 - Zilele lucrătoare exclud weekendurile și sărbătorile legale românești.
 - Pentru concediul medical este necesar un document atașat.
 - Fiecare tranziție este înregistrată în `LEAVE_WORKFLOW`.
-- Numărul maxim de colegi absenți simultan este configurabil per departament.
+- Numărul maxim de colegi absenți simultan este configurabil per departament, iar aprobările care ar depăși limita sunt blocate automat.
 
 ## Întrebări probabile și răspunsuri scurte
 

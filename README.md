@@ -13,7 +13,7 @@ Proiect realizat de **Tăranu Ionuț** pentru practica de specialitate, pe baza 
 - verificarea soldului la depunere și actualizarea lui la aprobare;
 - atașamente PDF/JPG/PNG și obligativitatea documentului pentru tipurile configurate;
 - istoric complet al schimbărilor de stare și al persoanei care le-a efectuat;
-- calendar de echipă, filtre și avertizare când lipsesc simultan prea mulți angajați;
+- calendar de echipă, avertizare de suprapunere și blocarea aprobării peste limita departamentului;
 - generarea cererii și a rapoartelor în format PDF;
 - administrarea angajaților, departamentelor și tipurilor de concediu;
 - interfață adaptată pentru desktop, tabletă și telefon.

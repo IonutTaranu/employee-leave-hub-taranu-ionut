@@ -163,13 +163,18 @@ public class LeaveRequestService {
         if (input.decision() == LeaveStatus.REJECTED && (input.comment() == null || input.comment().isBlank())) {
             throw ApiException.badRequest("Comentariul este obligatoriu la respingerea unei cereri.");
         }
-        if (input.decision() == LeaveStatus.APPROVED && deductsBalance(request)) {
-            var employee = request.getEmployee();
-            if (employee.getAvailableLeaveDays() < request.getWorkingDays()) {
-                throw ApiException.badRequest("Angajatul nu mai are suficiente zile de concediu disponibile.");
+        if (input.decision() == LeaveStatus.APPROVED) {
+            var department = departmentRepository.findByIdForUpdate(request.getEmployee().getDepartment().getId())
+                    .orElseThrow(() -> ApiException.notFound("Departamentul nu exista."));
+            ensureDepartmentCapacity(request, department);
+            if (deductsBalance(request)) {
+                var employee = request.getEmployee();
+                if (employee.getAvailableLeaveDays() < request.getWorkingDays()) {
+                    throw ApiException.badRequest("Angajatul nu mai are suficiente zile de concediu disponibile.");
+                }
+                employee.setAvailableLeaveDays(employee.getAvailableLeaveDays() - request.getWorkingDays());
+                employeeRepository.save(employee);
             }
-            employee.setAvailableLeaveDays(employee.getAvailableLeaveDays() - request.getWorkingDays());
-            employeeRepository.save(employee);
         }
         transition(request, current, input.decision(), clean(input.comment()));
         return mapper.leaveRequest(request);
@@ -257,6 +262,32 @@ public class LeaveRequestService {
             }
         });
         return warningIds;
+    }
+
+    private void ensureDepartmentCapacity(LeaveRequest candidate, Department department) {
+        var approved = requestRepository.findOverlappingByDepartment(
+                        department.getId(), List.of(LeaveStatus.APPROVED),
+                        candidate.getStartDate(), candidate.getEndDate())
+                .stream()
+                .filter(request -> !Objects.equals(request.getId(), candidate.getId()))
+                .toList();
+
+        for (var day = candidate.getStartDate(); !day.isAfter(candidate.getEndDate()); day = day.plusDays(1)) {
+            if (!holidayService.isWorkingDay(day)) {
+                continue;
+            }
+            var currentDay = day;
+            var absentEmployees = approved.stream()
+                    .filter(request -> !request.getStartDate().isAfter(currentDay)
+                            && !request.getEndDate().isBefore(currentDay))
+                    .map(request -> request.getEmployee().getId())
+                    .collect(java.util.stream.Collectors.toSet());
+            absentEmployees.add(candidate.getEmployee().getId());
+            if (absentEmployees.size() > department.getMaxAbsentEmployees()) {
+                throw ApiException.badRequest("Cererea nu poate fi aprobata: limita departamentului este de "
+                        + department.getMaxAbsentEmployees() + " angajati absenti simultan (" + currentDay + ").");
+            }
+        }
     }
 
     private void ensureBalanceForSubmission(LeaveRequest request) {
