@@ -1,0 +1,54 @@
+name: Verificare proiect
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend Java
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Descarcă sursele
+        uses: actions/checkout@v4
+      - name: Configurează Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Rulează testele și construiește JAR-ul
+        run: |
+          chmod +x mvnw
+          ./mvnw --batch-mode verify
+
+  frontend:
+    name: Frontend Angular
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Descarcă sursele
+        uses: actions/checkout@v4
+      - name: Configurează Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Instalează dependențele
+        run: npm ci
+      - name: Rulează testele
+        run: npm test
+      - name: Construiește aplicația
+        run: npm run build
