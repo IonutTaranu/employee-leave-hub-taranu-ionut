@@ -1,0 +1,29 @@
+<section class="page-head"><div><span>CONFIGURARE PLATFORMĂ</span><h1>Administrare</h1><p>Gestioneaza utilizatorii, departamentele si tipurile de concediu.</p></div></section>
+@if(loading()){<div class="loading"><mat-spinner diameter="38"/></div>}@else{
+<mat-card appearance="outlined" class="admin-card"><mat-tab-group animationDuration="150ms">
+  <mat-tab><ng-template mat-tab-label><mat-icon>group</mat-icon>Utilizatori <span class="count">{{employees().length}}</span></ng-template><div class="tab-head"><div><h3>Utilizatori</h3><p>Conturi si roluri de acces</p></div><button mat-flat-button (click)="employee()"><mat-icon>person_add</mat-icon>Utilizator nou</button></div><div class="table-wrap"><table mat-table [dataSource]="employees()">
+    <ng-container matColumnDef="name"><th mat-header-cell *matHeaderCellDef>UTILIZATOR</th><td mat-cell *matCellDef="let e"><span class="avatar">{{e.name.charAt(0)}}</span><span class="stack"><strong>{{e.name}}</strong><small>{{e.email}}</small></span></td></ng-container>
+    <ng-container matColumnDef="role"><th mat-header-cell *matHeaderCellDef>ROL</th><td mat-cell *matCellDef="let e"><span class="role" [class]="'role '+e.role.toLowerCase()">{{roleLabel(e.role)}}</span></td></ng-container>
+    <ng-container matColumnDef="department"><th mat-header-cell *matHeaderCellDef>DEPARTAMENT</th><td mat-cell *matCellDef="let e">{{e.departmentName}}</td></ng-container>
+    <ng-container matColumnDef="balance"><th mat-header-cell *matHeaderCellDef>SOLD CO</th><td mat-cell *matCellDef="let e"><strong>{{e.availableLeaveDays}}</strong> / {{e.annualLeaveDays}}</td></ng-container>
+    <ng-container matColumnDef="active"><th mat-header-cell *matHeaderCellDef>STATUS</th><td mat-cell *matCellDef="let e"><span [class]="e.active?'active':'inactive'">{{e.active?'Activ':'Inactiv'}}</span></td></ng-container>
+    <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let e"><button mat-icon-button (click)="employee(e)"><mat-icon>edit</mat-icon></button><button mat-icon-button (click)="removeEmployee(e)"><mat-icon>delete_outline</mat-icon></button></td></ng-container>
+    <tr mat-header-row *matHeaderRowDef="employeeColumns"></tr><tr mat-row *matRowDef="let row;columns:employeeColumns"></tr>
+  </table></div></mat-tab>
+  <mat-tab><ng-template mat-tab-label><mat-icon>apartment</mat-icon>Departamente <span class="count">{{departments().length}}</span></ng-template><div class="tab-head"><div><h3>Departamente</h3><p>Structura si limitele echipelor</p></div><button mat-flat-button (click)="department()"><mat-icon>add_business</mat-icon>Departament nou</button></div><div class="table-wrap"><table mat-table [dataSource]="departments()">
+    <ng-container matColumnDef="name"><th mat-header-cell *matHeaderCellDef>DENUMIRE</th><td mat-cell *matCellDef="let d"><span class="department-icon"><mat-icon>domain</mat-icon></span><strong>{{d.name}}</strong></td></ng-container>
+    <ng-container matColumnDef="manager"><th mat-header-cell *matHeaderCellDef>RESPONSABIL</th><td mat-cell *matCellDef="let d">{{d.managerName||'Nealocat'}}</td></ng-container>
+    <ng-container matColumnDef="employees"><th mat-header-cell *matHeaderCellDef>ANGAJATI</th><td mat-cell *matCellDef="let d">{{d.employeeCount}}</td></ng-container>
+    <ng-container matColumnDef="limit"><th mat-header-cell *matHeaderCellDef>LIMITA ABSENTI</th><td mat-cell *matCellDef="let d"><span class="limit">{{d.maxAbsentEmployees}}</span></td></ng-container>
+    <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let d"><button mat-icon-button (click)="department(d)"><mat-icon>edit</mat-icon></button><button mat-icon-button (click)="removeDepartment(d)"><mat-icon>delete_outline</mat-icon></button></td></ng-container>
+    <tr mat-header-row *matHeaderRowDef="departmentColumns"></tr><tr mat-row *matRowDef="let row;columns:departmentColumns"></tr>
+  </table></div></mat-tab>
+  <mat-tab><ng-template mat-tab-label><mat-icon>category</mat-icon>Tipuri de concediu <span class="count">{{types().length}}</span></ng-template><div class="tab-head"><div><h3>Tipuri de concediu</h3><p>Reguli pentru categoriile disponibile</p></div><button mat-flat-button (click)="leaveType()"><mat-icon>add</mat-icon>Tip nou</button></div><div class="table-wrap"><table mat-table [dataSource]="types()">
+    <ng-container matColumnDef="code"><th mat-header-cell *matHeaderCellDef>COD</th><td mat-cell *matCellDef="let t"><span class="code">{{t.code}}</span></td></ng-container>
+    <ng-container matColumnDef="name"><th mat-header-cell *matHeaderCellDef>DENUMIRE</th><td mat-cell *matCellDef="let t"><strong>{{t.name}}</strong></td></ng-container>
+    <ng-container matColumnDef="attachment"><th mat-header-cell *matHeaderCellDef>DOCUMENT</th><td mat-cell *matCellDef="let t">{{t.requiresAttachment?'Obligatoriu':'Nu este necesar'}}</td></ng-container>
+    <ng-container matColumnDef="paid"><th mat-header-cell *matHeaderCellDef>PLATIT</th><td mat-cell *matCellDef="let t"><mat-icon [class.yes]="t.paid">{{t.paid?'check_circle':'remove_circle_outline'}}</mat-icon></td></ng-container>
+    <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let t"><button mat-icon-button (click)="leaveType(t)"><mat-icon>edit</mat-icon></button><button mat-icon-button (click)="removeType(t)"><mat-icon>delete_outline</mat-icon></button></td></ng-container>
+    <tr mat-header-row *matHeaderRowDef="typeColumns"></tr><tr mat-row *matRowDef="let row;columns:typeColumns"></tr>
+  </table></div></mat-tab>
+</mat-tab-group></mat-card>}

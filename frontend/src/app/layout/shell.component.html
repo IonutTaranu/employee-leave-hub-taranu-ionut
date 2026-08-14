@@ -1,0 +1,36 @@
+<mat-sidenav-container class="app-shell">
+  <mat-sidenav class="sidebar" [mode]="mobile() ? 'over' : 'side'" [opened]="mobile() ? menuOpen() : true" (openedChange)="menuOpen.set($event)">
+    <div class="logo"><span class="logo-mark">EL</span><div><strong>Employee</strong><span>Leave Hub</span></div></div>
+    <div class="workspace-label">SPATIU DE LUCRU</div>
+    <mat-nav-list>
+      @for (item of nav(); track item.route) {
+        <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link"><mat-icon matListItemIcon>{{ item.icon }}</mat-icon><span matListItemTitle>{{ item.label }}</span></a>
+      }
+    </mat-nav-list>
+    <div class="sidebar-bottom">
+      <div class="support-card"><mat-icon>help_outline</mat-icon><div><strong>Ai nevoie de ajutor?</strong><span>Consulta ghidul proiectului</span></div></div>
+      <mat-divider />
+      <button class="profile-mini" [matMenuTriggerFor]="profileMenu">
+        <span class="avatar">{{ initials(auth.user()?.name) }}</span><span class="profile-copy"><strong>{{ auth.user()?.name }}</strong><small>{{ roleLabel() }}</small></span><mat-icon>more_vert</mat-icon>
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="topbar">
+      @if (mobile()) { <button mat-icon-button (click)="menuOpen.set(true)"><mat-icon>menu</mat-icon></button> }
+      <div><span class="topbar-kicker">EMPLOYEE LEAVE HUB</span><h2>{{ pageTitle() }}</h2></div>
+      <span class="toolbar-spacer"></span>
+      <div class="department-pill"><mat-icon>apartment</mat-icon>{{ auth.user()?.departmentName }}</div>
+      <button mat-icon-button aria-label="Notificari"><mat-icon>notifications_none</mat-icon></button>
+      <button mat-icon-button [matMenuTriggerFor]="profileMenu"><span class="top-avatar">{{ initials(auth.user()?.name) }}</span></button>
+    </mat-toolbar>
+    <main class="page-content"><router-outlet /></main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<mat-menu #profileMenu="matMenu">
+  <div class="menu-profile"><strong>{{ auth.user()?.name }}</strong><span>{{ auth.user()?.email }}</span></div>
+  <mat-divider />
+  <button mat-menu-item (click)="auth.logout()"><mat-icon>logout</mat-icon><span>Deconectare</span></button>
+</mat-menu>

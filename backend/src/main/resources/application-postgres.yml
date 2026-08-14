@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/leavehub}
+    username: ${DB_USERNAME:leavehub}
+    password: ${DB_PASSWORD:leavehub}
+  h2:
+    console:
+      enabled: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:ZW1wbG95ZWUtbGVhdmUtaHViLWRlbW8tc2VjcmV0LWtleS0yMDI2LWNoYW5nZS1pbi1wcm9kdWN0aW9uLXBseA==}

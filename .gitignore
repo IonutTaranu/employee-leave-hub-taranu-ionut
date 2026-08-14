@@ -1,0 +1,20 @@
+# IDE și sistem de operare
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Backend
+backend/target/
+backend/data/
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Variabile și fișiere locale
+.env
+.env.*
+!.env.example

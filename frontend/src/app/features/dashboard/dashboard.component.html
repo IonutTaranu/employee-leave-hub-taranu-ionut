@@ -1,0 +1,51 @@
+@if (loading()) {
+  <div class="loading-state"><mat-spinner diameter="38" /><span>Se incarca tabloul de bord...</span></div>
+} @else if (data(); as d) {
+  <section class="welcome-row">
+    <div><span class="eyebrow">{{ auth.user()?.departmentName }}</span><h1>{{ greeting() }}, {{ auth.user()?.name?.split(' ')?.[0] }}!</h1><p>Iata situatia concediilor si activitatea recenta.</p></div>
+    <a mat-flat-button routerLink="/requests" class="primary-action"><mat-icon>add</mat-icon>Cerere noua</a>
+  </section>
+
+  <section class="metric-grid">
+    <article class="metric-card accent"><div class="metric-icon"><mat-icon>event_available</mat-icon></div><div><span>Zile disponibile</span><strong>{{ d.balance.available }}</strong><small>din {{ d.balance.annual }} zile anual</small></div></article>
+    <article class="metric-card"><div class="metric-icon orange"><mat-icon>hourglass_top</mat-icon></div><div><span>Zile in asteptare</span><strong>{{ d.balance.pending }}</strong><small>{{ d.pendingRequests }} cereri de procesat</small></div></article>
+    <article class="metric-card"><div class="metric-icon green"><mat-icon>check_circle_outline</mat-icon></div><div><span>Cereri aprobate</span><strong>{{ d.approvedRequests }}</strong><small>din {{ d.totalRequests }} cereri totale</small></div></article>
+    <article class="metric-card"><div class="metric-icon purple"><mat-icon>beach_access</mat-icon></div><div><span>Zile consumate</span><strong>{{ d.balance.consumed }}</strong><small>{{ percentage(d.balance.consumed, d.balance.annual) }}% din soldul anual</small></div></article>
+  </section>
+
+  <section class="dashboard-grid">
+    <mat-card appearance="outlined" class="balance-card">
+      <mat-card-header><mat-card-title>Soldul concediului</mat-card-title><mat-card-subtitle>Anul curent</mat-card-subtitle></mat-card-header>
+      <mat-card-content>
+        <div class="balance-visual"><div class="balance-ring" [style.--progress]="percentage(d.balance.consumed, d.balance.annual) + '%' "><div><strong>{{ d.balance.available }}</strong><span>ramase</span></div></div>
+          <div class="balance-legend"><div><i class="available"></i><span>Disponibile</span><strong>{{ d.balance.available }}</strong></div><div><i class="consumed"></i><span>Consumate</span><strong>{{ d.balance.consumed }}</strong></div><div><i class="pending"></i><span>In asteptare</span><strong>{{ d.balance.pending }}</strong></div></div>
+        </div>
+        <div class="balance-tip"><mat-icon>lightbulb</mat-icon><span>Planifica din timp pentru a evita suprapunerile cu echipa.</span></div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="quick-card">
+      <mat-card-header><mat-card-title>Actiuni rapide</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <a routerLink="/requests"><span class="quick-icon teal"><mat-icon>add_task</mat-icon></span><span><strong>Cerere noua</strong><small>Planifica o perioada de concediu</small></span><mat-icon>chevron_right</mat-icon></a>
+        @if (auth.hasRole('MANAGER','ADMIN')) { <a routerLink="/approvals"><span class="quick-icon orange"><mat-icon>fact_check</mat-icon></span><span><strong>Proceseaza cereri</strong><small>{{ d.pendingRequests }} cereri asteapta o decizie</small></span><mat-icon>chevron_right</mat-icon></a> }
+        <a routerLink="/calendar"><span class="quick-icon blue"><mat-icon>calendar_month</mat-icon></span><span><strong>Calendar echipa</strong><small>Vezi planificarea departamentului</small></span><mat-icon>chevron_right</mat-icon></a>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <mat-card appearance="outlined" class="recent-card">
+    <mat-card-header><mat-card-title>Activitate recenta</mat-card-title><span class="card-spacer"></span><a mat-button routerLink="/requests">Vezi toate<mat-icon>arrow_forward</mat-icon></a></mat-card-header>
+    <mat-card-content>
+      @if (d.recentRequests.length) {
+        <table mat-table [dataSource]="d.recentRequests">
+          <ng-container matColumnDef="type"><th mat-header-cell *matHeaderCellDef>TIP CONCEDIU</th><td mat-cell *matCellDef="let item"><span class="type-badge">{{ item.leaveTypeCode }}</span><span class="cell-main">{{ item.leaveTypeName }}</span></td></ng-container>
+          <ng-container matColumnDef="period"><th mat-header-cell *matHeaderCellDef>PERIOADA</th><td mat-cell *matCellDef="let item">{{ formatDate(item.startDate) }} – {{ formatDate(item.endDate) }}</td></ng-container>
+          <ng-container matColumnDef="days"><th mat-header-cell *matHeaderCellDef>ZILE</th><td mat-cell *matCellDef="let item">{{ item.workingDays }}</td></ng-container>
+          <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>STATUS</th><td mat-cell *matCellDef="let item"><span [class]="statusClass(item.status)">{{ statusLabel(item.status) }}</span></td></ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr><tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      } @else { <div class="empty"><mat-icon>event_busy</mat-icon><span>Nu exista activitate recenta.</span></div> }
+    </mat-card-content>
+  </mat-card>
+}

@@ -1,0 +1,22 @@
+<section class="page-head"><div><span>ANALIZA SI EXPORT</span><h1>Rapoarte</h1><p>O privire de ansamblu asupra cererilor si soldurilor de concediu.</p></div></section>
+@if(loading()){<div class="loading"><mat-spinner diameter="38"/></div>}@else if(data();as d){
+  <section class="metrics"><article><span class="icon teal"><mat-icon>description</mat-icon></span><div><small>Total cereri</small><strong>{{d.totalRequests}}</strong></div></article><article><span class="icon orange"><mat-icon>hourglass_top</mat-icon></span><div><small>In asteptare</small><strong>{{d.pendingRequests}}</strong></div></article><article><span class="icon green"><mat-icon>check_circle</mat-icon></span><div><small>Aprobate</small><strong>{{d.approvedRequests}}</strong></div></article><article><span class="icon red"><mat-icon>cancel</mat-icon></span><div><small>Respinse</small><strong>{{d.rejectedRequests}}</strong></div></article></section>
+  <section class="report-grid">
+    <mat-card appearance="outlined" class="exports"><mat-card-header><mat-card-title>Genereaza documente</mat-card-title><mat-card-subtitle>Rapoarte PDF actualizate in timp real</mat-card-subtitle></mat-card-header><mat-card-content>
+      <button (click)="download('/reports/pending.pdf','cereri-in-asteptare.pdf')"><span class="pdf-icon"><mat-icon>picture_as_pdf</mat-icon></span><span><strong>Cereri in asteptare</strong><small>Lista cererilor care necesita o decizie</small></span>@if(downloading()==='/reports/pending.pdf'){<mat-spinner diameter="20"/>}@else{<mat-icon>download</mat-icon>}</button>
+      @if(auth.hasRole('ADMIN')){<button (click)="download('/reports/balances.pdf','situatia-soldurilor.pdf')"><span class="pdf-icon purple"><mat-icon>account_balance_wallet</mat-icon></span><span><strong>Situatia soldurilor</strong><small>Zile disponibile si consumate per angajat</small></span>@if(downloading()==='/reports/balances.pdf'){<mat-spinner diameter="20"/>}@else{<mat-icon>download</mat-icon>}</button>}
+    </mat-card-content></mat-card>
+    <mat-card appearance="outlined" class="distribution"><mat-card-header><mat-card-title>Distributia cererilor</mat-card-title></mat-card-header><mat-card-content>
+      <div class="donut" [style.--approved]="d.totalRequests?d.approvedRequests/d.totalRequests*100+'%':'0%'" [style.--pending]="d.totalRequests?(d.approvedRequests+d.pendingRequests)/d.totalRequests*100+'%':'0%'"><span><strong>{{d.totalRequests}}</strong><small>cereri</small></span></div>
+      <div class="legend"><span><i class="approved"></i>Aprobate <strong>{{d.approvedRequests}}</strong></span><span><i class="pending"></i>In asteptare <strong>{{d.pendingRequests}}</strong></span><span><i class="other"></i>Altele <strong>{{d.totalRequests-d.approvedRequests-d.pendingRequests}}</strong></span></div>
+    </mat-card-content></mat-card>
+  </section>
+  <mat-card appearance="outlined" class="department-table"><mat-card-header><mat-card-title>Situatie pe departamente</mat-card-title></mat-card-header><mat-card-content><table mat-table [dataSource]="d.departments">
+    <ng-container matColumnDef="department"><th mat-header-cell *matHeaderCellDef>DEPARTAMENT</th><td mat-cell *matCellDef="let row"><span class="department-icon"><mat-icon>apartment</mat-icon></span><strong>{{row.departmentName}}</strong></td></ng-container>
+    <ng-container matColumnDef="employees"><th mat-header-cell *matHeaderCellDef>ANGAJATI</th><td mat-cell *matCellDef="let row">{{row.employees}}</td></ng-container>
+    <ng-container matColumnDef="requests"><th mat-header-cell *matHeaderCellDef>CERERI</th><td mat-cell *matCellDef="let row">{{row.requests}}</td></ng-container>
+    <ng-container matColumnDef="days"><th mat-header-cell *matHeaderCellDef>ZILE APROBATE</th><td mat-cell *matCellDef="let row"><strong>{{row.approvedDays}}</strong></td></ng-container>
+    <ng-container matColumnDef="pending"><th mat-header-cell *matHeaderCellDef>IN ASTEPTARE</th><td mat-cell *matCellDef="let row"><span class="pending-pill">{{row.pendingRequests}}</span></td></ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr><tr mat-row *matRowDef="let row;columns:columns"></tr>
+  </table></mat-card-content></mat-card>
+}
